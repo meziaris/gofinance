@@ -1,0 +1,18 @@
+# references : https://golangci-lint.run/usage/configuration/
+# Options for analysis running.
+run:
+  # Which dirs to skip: issues from them won't be reported.
+  skip-dirs:
+    - "docs"
+    - "migrations"
+  # Define the Go version limit.
+  go: "1.20"
+linters:
+  # Disable all linters.
+  disable-all: true
+  # https://golangci-lint.run/usage/linters/#enabled-by-default
+  enable:
+    - errcheck
+    - gosec
+    - gosimple
+    - unused
