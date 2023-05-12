@@ -1,0 +1,49 @@
+version: "3.8"
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:15.2
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=gofinance
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d gofinance"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+    volumes:
+       - postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - database_network
+    restart: always
+  migrate:
+    image: migrate/migrate
+    profiles:
+      - tools
+    networks:
+      - database_network
+    volumes:
+      - ./migrations:/migrations
+    entrypoint:
+      [
+        "migrate",
+        "-path",
+        "/migrations",
+        "-database",
+        "postgres://postgres:postgres@postgres:5432/gofinance?sslmode=disable"
+      ]
+    command: "up"
+    depends_on:
+      - postgres
+
+volumes:
+  # default dir on Ubuntu: /var/lib/docker/volumes
+  postgres:
+
+networks:
+  database_network:
+    driver: bridge
