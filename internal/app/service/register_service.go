@@ -10,8 +10,8 @@ import (
 )
 
 type Register interface {
-	Create(user model.UserRepository) error
-	GetByUsername(username string) (user model.UserRepository, err error)
+	Create(user model.User) error
+	GetByUsername(username string) (user model.User, err error)
 }
 
 type RegistrationService struct {
@@ -30,7 +30,7 @@ func (s RegistrationService) Register(req schema.RegisterReq) error {
 
 	password, _ := s.hashPassword(req.Password)
 
-	inserData := model.UserRepository{
+	inserData := model.User{
 		Username:       req.Username,
 		FullName:       req.FullName,
 		HashedPassword: password,

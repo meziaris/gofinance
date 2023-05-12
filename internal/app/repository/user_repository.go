@@ -15,7 +15,7 @@ func NewUserRepository(db *sqlx.DB) UserRepository {
 	return UserRepository{DB: db}
 }
 
-func (r UserRepository) Create(user model.UserRepository) error {
+func (r UserRepository) Create(user model.User) error {
 	var (
 		sqlStatement = `
 			INSERT INTO users (username, hashed_password, full_name)
@@ -32,11 +32,11 @@ func (r UserRepository) Create(user model.UserRepository) error {
 	return nil
 }
 
-func (r UserRepository) GetByUsername(username string) (model.UserRepository, error) {
+func (r UserRepository) GetByUsername(username string) (model.User, error) {
 	var (
-		user         = model.UserRepository{}
+		user         = model.User{}
 		sqlStatement = `
-			SELECT id, username, full_name
+			SELECT id, username, full_name, hashed_password
 			FROM users
 			WHERE username = $1
 			LIMIT 1
@@ -45,6 +45,25 @@ func (r UserRepository) GetByUsername(username string) (model.UserRepository, er
 
 	if err := r.DB.QueryRowx(sqlStatement, username).StructScan(&user); err != nil {
 		fmt.Println("error UserRepository - GetByUsername :", err)
+		return user, err
+	}
+
+	return user, nil
+}
+
+func (r UserRepository) GetByID(userID int) (model.User, error) {
+	var (
+		user         = model.User{}
+		sqlStatement = `
+			SELECT id, username, full_name
+			FROM users
+			WHERE id = $1
+			LIMIT 1
+		`
+	)
+
+	if err := r.DB.QueryRowx(sqlStatement, userID).StructScan(&user); err != nil {
+		fmt.Println("error UserRepository - GetByID :", err)
 		return user, err
 	}
 
