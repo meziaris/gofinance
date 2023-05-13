@@ -1,10 +1,9 @@
 package repository
 
 import (
-	"fmt"
-
 	"github.com/jmoiron/sqlx"
 	"github.com/meziaris/gofinance/internal/app/model"
+	log "github.com/sirupsen/logrus"
 )
 
 type UserRepository struct {
@@ -25,7 +24,7 @@ func (r UserRepository) Create(user model.User) error {
 
 	_, err := r.DB.Exec(sqlStatement, user.Username, user.HashedPassword, user.FullName)
 	if err != nil {
-		fmt.Println("error UserRepository - Create :", err)
+		log.Error("error UserRepository - Create :", err)
 		return err
 	}
 
@@ -44,7 +43,7 @@ func (r UserRepository) GetByUsername(username string) (model.User, error) {
 	)
 
 	if err := r.DB.QueryRowx(sqlStatement, username).StructScan(&user); err != nil {
-		fmt.Println("error UserRepository - GetByUsername :", err)
+		log.Error("error UserRepository - GetByUsername :", err)
 		return user, err
 	}
 
@@ -63,7 +62,7 @@ func (r UserRepository) GetByID(userID int) (model.User, error) {
 	)
 
 	if err := r.DB.QueryRowx(sqlStatement, userID).StructScan(&user); err != nil {
-		fmt.Println("error UserRepository - GetByID :", err)
+		log.Error("error UserRepository - GetByID :", err)
 		return user, err
 	}
 

@@ -37,6 +37,7 @@ func main() {
 	// repository
 	userRepo := repository.NewUserRepository(DBConn)
 	authRepo := repository.NewAuthRepository(DBConn)
+	categoryRepo := repository.NewCategoryRepository(DBConn)
 
 	// service
 	tokenCreator := service.NewTokenCreator(
@@ -47,10 +48,12 @@ func main() {
 	)
 	userService := service.NewRegistrationService(userRepo)
 	sessionService := service.NewSessionService(userRepo, authRepo, tokenCreator)
+	categoryService := service.NewCategoryService(categoryRepo)
 
 	// controller
 	registrationController := controller.NewRegistrationController(userService)
 	sessionController := controller.NewSessionController(sessionService, tokenCreator)
+	categoryController := controller.NewCategoryController(categoryService)
 
 	// router
 	r := chi.NewRouter()
@@ -63,6 +66,15 @@ func main() {
 	r.Route("/auth/logout", func(r chi.Router) {
 		r.Use(middleware.AuthMiddleware(tokenCreator))
 		r.Get("/", sessionController.Logout)
+	})
+
+	r.Route("/category", func(r chi.Router) {
+		r.Use(middleware.AuthMiddleware(tokenCreator))
+		r.Post("/", categoryController.CreateCategory)
+		r.Get("/", categoryController.BrowseCategory)
+		r.Patch("/{id}", categoryController.UpdateCategory)
+		r.Get("/{id}", categoryController.DetailCategory)
+		r.Delete("/{id}", categoryController.DeleteCategory)
 	})
 
 	server := &http.Server{
