@@ -38,6 +38,7 @@ func main() {
 	userRepo := repository.NewUserRepository(DBConn)
 	authRepo := repository.NewAuthRepository(DBConn)
 	categoryRepo := repository.NewCategoryRepository(DBConn)
+	currencyRepo := repository.NewCurrencyRepository(DBConn)
 
 	// service
 	tokenCreator := service.NewTokenCreator(
@@ -49,11 +50,13 @@ func main() {
 	userService := service.NewRegistrationService(userRepo)
 	sessionService := service.NewSessionService(userRepo, authRepo, tokenCreator)
 	categoryService := service.NewCategoryService(categoryRepo)
+	currencyService := service.NewCurrencyService(currencyRepo)
 
 	// controller
 	registrationController := controller.NewRegistrationController(userService)
 	sessionController := controller.NewSessionController(sessionService, tokenCreator)
 	categoryController := controller.NewCategoryController(categoryService)
+	currencyController := controller.NewCurrencyController(currencyService)
 
 	// router
 	r := chi.NewRouter()
@@ -75,6 +78,15 @@ func main() {
 		r.Patch("/{id}", categoryController.UpdateCategory)
 		r.Get("/{id}", categoryController.DetailCategory)
 		r.Delete("/{id}", categoryController.DeleteCategory)
+	})
+
+	r.Route("/currency", func(r chi.Router) {
+		r.Use(middleware.AuthMiddleware(tokenCreator))
+		r.Post("/", currencyController.CreateCurrency)
+		r.Get("/", currencyController.BrowseCurrency)
+		r.Patch("/{id}", currencyController.UpdateCurrency)
+		r.Get("/{id}", currencyController.DetailCurrency)
+		r.Delete("/{id}", currencyController.DeleteCurrency)
 	})
 
 	server := &http.Server{
