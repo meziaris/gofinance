@@ -38,6 +38,7 @@ func main() {
 	userRepo := repository.NewUserRepository(DBConn)
 	authRepo := repository.NewAuthRepository(DBConn)
 	transactionCategoryRepo := repository.NewTransactionCategoryRepository(DBConn)
+	trxTypeRepo := repository.NewTransactionTypeRepository(DBConn)
 	currencyRepo := repository.NewCurrencyRepository(DBConn)
 
 	// service
@@ -50,12 +51,14 @@ func main() {
 	userService := service.NewRegistrationService(userRepo)
 	sessionService := service.NewSessionService(userRepo, authRepo, tokenCreator)
 	transactionCategoryService := service.NewTransactionCategoryService(transactionCategoryRepo)
+	trxTypeService := service.NewTransactionTypeService(trxTypeRepo)
 	currencyService := service.NewCurrencyService(currencyRepo)
 
 	// controller
 	registrationController := controller.NewRegistrationController(userService)
 	sessionController := controller.NewSessionController(sessionService, tokenCreator)
 	transactionCategoryController := controller.NewTransactionCategoryController(transactionCategoryService)
+	trxTypeController := controller.NewTransactionTypeController(trxTypeService)
 	currencyController := controller.NewCurrencyController(currencyService)
 
 	// router
@@ -80,6 +83,14 @@ func main() {
 			r.Patch("/{id}", transactionCategoryController.UpdateCategory)
 			r.Get("/{id}", transactionCategoryController.DetailCategory)
 			r.Delete("/{id}", transactionCategoryController.DeleteCategory)
+		})
+
+		r.Route("/types", func(r chi.Router) {
+			r.Post("/", trxTypeController.Create)
+			r.Get("/", trxTypeController.BrowseAll)
+			r.Patch("/{id}", trxTypeController.Update)
+			r.Get("/{id}", trxTypeController.Detail)
+			r.Delete("/{id}", trxTypeController.Delete)
 		})
 	})
 
