@@ -1,12 +1,12 @@
 package model
 
-type Category struct {
+type TransactionCategory struct {
 	ID          int    `db:"id"`
 	Name        string `db:"name"`
 	Description string `db:"description"`
 }
 
-type BrowseCategory struct {
+type BrowseTransactionCategory struct {
 	Page  int
 	Limit int
 }

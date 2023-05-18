@@ -9,24 +9,24 @@ import (
 	"github.com/meziaris/gofinance/internal/pkg/handler"
 )
 
-type CategoryService interface {
-	Create(category schema.CategoryReq) error
-	BrowseAll(req schema.BrowseCategoryReq) ([]schema.GetCategoryResp, error)
-	UpdateByID(id string, category schema.CategoryReq) error
-	GetByID(id string) (schema.GetCategoryResp, error)
+type TransactionCategoryService interface {
+	Create(category schema.TransactionCategoryReq) error
+	BrowseAll(req schema.BrowseTransactionCategoryReq) ([]schema.GetTransactionCategoryResp, error)
+	UpdateByID(id string, category schema.TransactionCategoryReq) error
+	GetByID(id string) (schema.GetTransactionCategoryResp, error)
 	DeleteByID(id string) error
 }
 
-type CategoryController struct {
-	service CategoryService
+type TransactionCategoryController struct {
+	service TransactionCategoryService
 }
 
-func NewCategoryController(categoryService CategoryService) CategoryController {
-	return CategoryController{service: categoryService}
+func NewTransactionCategoryController(categoryService TransactionCategoryService) TransactionCategoryController {
+	return TransactionCategoryController{service: categoryService}
 }
 
-func (c CategoryController) CreateCategory(w http.ResponseWriter, r *http.Request) {
-	req := schema.CategoryReq{}
+func (c TransactionCategoryController) CreateCategory(w http.ResponseWriter, r *http.Request) {
+	req := schema.TransactionCategoryReq{}
 
 	if handler.BindAndCheck(w, r, &req) {
 		return
@@ -37,16 +37,16 @@ func (c CategoryController) CreateCategory(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	resp := schema.CategoryResp(req)
+	resp := schema.TransactionCategoryResp(req)
 
 	handler.ResponseSuccess(w, http.StatusOK, "success register", resp)
 }
 
-func (c CategoryController) BrowseCategory(w http.ResponseWriter, r *http.Request) {
+func (c TransactionCategoryController) BrowseCategory(w http.ResponseWriter, r *http.Request) {
 	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
 	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
 
-	req := schema.BrowseCategoryReq{
+	req := schema.BrowseTransactionCategoryReq{
 		Page:  page,
 		Limit: limit,
 	}
@@ -60,9 +60,9 @@ func (c CategoryController) BrowseCategory(w http.ResponseWriter, r *http.Reques
 	handler.ResponseSuccess(w, http.StatusOK, "success browse category", resp)
 }
 
-func (c CategoryController) UpdateCategory(w http.ResponseWriter, r *http.Request) {
+func (c TransactionCategoryController) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	req := schema.CategoryReq{}
+	req := schema.TransactionCategoryReq{}
 
 	if handler.BindAndCheck(w, r, &req) {
 		return
@@ -74,12 +74,12 @@ func (c CategoryController) UpdateCategory(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	resp := schema.CategoryResp(req)
+	resp := schema.TransactionCategoryResp(req)
 
 	handler.ResponseSuccess(w, http.StatusOK, "success register", resp)
 }
 
-func (c CategoryController) DetailCategory(w http.ResponseWriter, r *http.Request) {
+func (c TransactionCategoryController) DetailCategory(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	catResp, err := c.service.GetByID(id)
@@ -91,7 +91,7 @@ func (c CategoryController) DetailCategory(w http.ResponseWriter, r *http.Reques
 	handler.ResponseSuccess(w, http.StatusOK, "success get detail category", catResp)
 }
 
-func (c CategoryController) DeleteCategory(w http.ResponseWriter, r *http.Request) {
+func (c TransactionCategoryController) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	err := c.service.DeleteByID(id)
