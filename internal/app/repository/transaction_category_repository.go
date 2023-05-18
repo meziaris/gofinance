@@ -9,18 +9,18 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type CategoryRepository struct {
+type TransactionCategoryRepository struct {
 	DB *sqlx.DB
 }
 
-func NewCategoryRepository(db *sqlx.DB) CategoryRepository {
-	return CategoryRepository{DB: db}
+func NewTransactionCategoryRepository(db *sqlx.DB) TransactionCategoryRepository {
+	return TransactionCategoryRepository{DB: db}
 }
 
-func (r CategoryRepository) Create(category model.Category) error {
+func (r TransactionCategoryRepository) Create(category model.TransactionCategory) error {
 	var (
 		sqlStatement = `
-			INSERT INTO categories(name, description)
+			INSERT INTO transaction_categories(name, description)
 			VALUES ($1, $2)
 		`
 	)
@@ -34,12 +34,12 @@ func (r CategoryRepository) Create(category model.Category) error {
 	return nil
 }
 
-func (r CategoryRepository) GetByID(id string) (model.Category, error) {
+func (r TransactionCategoryRepository) GetByID(id string) (model.TransactionCategory, error) {
 	var (
-		category     = model.Category{}
+		category     = model.TransactionCategory{}
 		sqlStatement = `
 			SELECT id, name, description
-			FROM categories
+			FROM transaction_categories
 			WHERE id = $1
 			LIMIT 1
 		`
@@ -53,14 +53,14 @@ func (r CategoryRepository) GetByID(id string) (model.Category, error) {
 	return category, nil
 }
 
-func (cr CategoryRepository) Browse(search model.BrowseCategory) ([]model.Category, error) {
+func (cr TransactionCategoryRepository) Browse(search model.BrowseTransactionCategory) ([]model.TransactionCategory, error) {
 	var (
 		limit        = search.Limit
 		offset       = limit * (search.Page - 1)
-		categories   []model.Category
+		categories   []model.TransactionCategory
 		sqlStatement = `
 			SELECT id, name, description
-			FROM categories
+			FROM transaction_categories
 			LIMIT $1
 			OFFSET $2
 		`
@@ -73,7 +73,7 @@ func (cr CategoryRepository) Browse(search model.BrowseCategory) ([]model.Catego
 	}
 
 	for rows.Next() {
-		var category model.Category
+		var category model.TransactionCategory
 		err := rows.StructScan(&category)
 		if err != nil {
 			log.Error(fmt.Errorf("error CategoryRepository - Browse : %w", err))
@@ -84,10 +84,10 @@ func (cr CategoryRepository) Browse(search model.BrowseCategory) ([]model.Catego
 	return categories, nil
 }
 
-func (r CategoryRepository) UpdateByID(category model.Category) error {
+func (r TransactionCategoryRepository) UpdateByID(category model.TransactionCategory) error {
 	var (
 		sqlStatement = `
-			UPDATE categories
+			UPDATE transaction_categories
 			SET updated_at = NOW(),
 				name = $2,
 				description = $3
@@ -109,10 +109,10 @@ func (r CategoryRepository) UpdateByID(category model.Category) error {
 	return nil
 }
 
-func (r CategoryRepository) DeleteByID(id string) error {
+func (r TransactionCategoryRepository) DeleteByID(id string) error {
 	var (
 		sqlStatement = `
-			DELETE FROM categories
+			DELETE FROM transaction_categories
 			WHERE id = $1
 		`
 	)

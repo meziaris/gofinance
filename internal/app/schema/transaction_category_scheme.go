@@ -1,22 +1,22 @@
 package schema
 
-type CategoryReq struct {
+type TransactionCategoryReq struct {
 	Name        string `json:"name" validate:"required"`
 	Description string `json:"description" validate:"required"`
 }
 
-type CategoryResp struct {
+type TransactionCategoryResp struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
 
-type GetCategoryResp struct {
+type GetTransactionCategoryResp struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
 
-type BrowseCategoryReq struct {
+type BrowseTransactionCategoryReq struct {
 	Page  int
 	Limit int
 }

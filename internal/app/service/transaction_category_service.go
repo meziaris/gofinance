@@ -7,24 +7,24 @@ import (
 	"github.com/meziaris/gofinance/internal/app/schema"
 )
 
-type CategoryRepository interface {
-	Create(category model.Category) error
-	Browse(search model.BrowseCategory) ([]model.Category, error)
-	GetByID(id string) (model.Category, error)
-	UpdateByID(category model.Category) error
+type TransactionCategoryRepository interface {
+	Create(category model.TransactionCategory) error
+	Browse(search model.BrowseTransactionCategory) ([]model.TransactionCategory, error)
+	GetByID(id string) (model.TransactionCategory, error)
+	UpdateByID(category model.TransactionCategory) error
 	DeleteByID(id string) error
 }
 
-type CategoryService struct {
-	categoryRepo CategoryRepository
+type TransactionCategoryService struct {
+	categoryRepo TransactionCategoryRepository
 }
 
-func NewCategoryService(categoryRepo CategoryRepository) CategoryService {
-	return CategoryService{categoryRepo: categoryRepo}
+func NewTransactionCategoryService(categoryRepo TransactionCategoryRepository) TransactionCategoryService {
+	return TransactionCategoryService{categoryRepo: categoryRepo}
 }
 
-func (s CategoryService) Create(req schema.CategoryReq) error {
-	insertData := model.Category{
+func (s TransactionCategoryService) Create(req schema.TransactionCategoryReq) error {
+	insertData := model.TransactionCategory{
 		Name:        req.Name,
 		Description: req.Description,
 	}
@@ -37,17 +37,17 @@ func (s CategoryService) Create(req schema.CategoryReq) error {
 	return nil
 }
 
-func (s CategoryService) BrowseAll(req schema.BrowseCategoryReq) ([]schema.GetCategoryResp, error) {
-	var resp []schema.GetCategoryResp
+func (s TransactionCategoryService) BrowseAll(req schema.BrowseTransactionCategoryReq) ([]schema.GetTransactionCategoryResp, error) {
+	var resp []schema.GetTransactionCategoryResp
 
-	dbSearch := model.BrowseCategory{Page: req.Page, Limit: req.Limit}
+	dbSearch := model.BrowseTransactionCategory{Page: req.Page, Limit: req.Limit}
 	categories, err := s.categoryRepo.Browse(dbSearch)
 	if err != nil {
 		return nil, errors.New("cannot get categories")
 	}
 
 	for _, value := range categories {
-		var respData schema.GetCategoryResp
+		var respData schema.GetTransactionCategoryResp
 		respData.ID = value.ID
 		respData.Name = value.Name
 		respData.Description = value.Description
@@ -57,8 +57,8 @@ func (s CategoryService) BrowseAll(req schema.BrowseCategoryReq) ([]schema.GetCa
 	return resp, nil
 }
 
-func (s CategoryService) Update(req schema.CategoryReq) error {
-	insertData := model.Category{
+func (s TransactionCategoryService) Update(req schema.TransactionCategoryReq) error {
+	insertData := model.TransactionCategory{
 		Name:        req.Name,
 		Description: req.Description,
 	}
@@ -71,13 +71,13 @@ func (s CategoryService) Update(req schema.CategoryReq) error {
 	return nil
 }
 
-func (s CategoryService) UpdateByID(id string, req schema.CategoryReq) error {
+func (s TransactionCategoryService) UpdateByID(id string, req schema.TransactionCategoryReq) error {
 	oldData, err := s.categoryRepo.GetByID(id)
 	if err != nil {
 		return errors.New("category not exist")
 	}
 
-	updateDate := model.Category{
+	updateDate := model.TransactionCategory{
 		ID:          oldData.ID,
 		Name:        req.Name,
 		Description: req.Description,
@@ -90,8 +90,8 @@ func (s CategoryService) UpdateByID(id string, req schema.CategoryReq) error {
 	return nil
 }
 
-func (s CategoryService) GetByID(id string) (schema.GetCategoryResp, error) {
-	resp := schema.GetCategoryResp{}
+func (s TransactionCategoryService) GetByID(id string) (schema.GetTransactionCategoryResp, error) {
+	resp := schema.GetTransactionCategoryResp{}
 	cat, err := s.categoryRepo.GetByID(id)
 	if err != nil {
 		return resp, errors.New("category not exist")
@@ -104,7 +104,7 @@ func (s CategoryService) GetByID(id string) (schema.GetCategoryResp, error) {
 	return resp, nil
 }
 
-func (s CategoryService) DeleteByID(id string) error {
+func (s TransactionCategoryService) DeleteByID(id string) error {
 	_, err := s.categoryRepo.GetByID(id)
 	if err != nil {
 		return errors.New("category not exist")

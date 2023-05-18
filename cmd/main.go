@@ -37,7 +37,7 @@ func main() {
 	// repository
 	userRepo := repository.NewUserRepository(DBConn)
 	authRepo := repository.NewAuthRepository(DBConn)
-	categoryRepo := repository.NewCategoryRepository(DBConn)
+	transactionCategoryRepo := repository.NewTransactionCategoryRepository(DBConn)
 	currencyRepo := repository.NewCurrencyRepository(DBConn)
 
 	// service
@@ -49,13 +49,13 @@ func main() {
 	)
 	userService := service.NewRegistrationService(userRepo)
 	sessionService := service.NewSessionService(userRepo, authRepo, tokenCreator)
-	categoryService := service.NewCategoryService(categoryRepo)
+	transactionCategoryService := service.NewTransactionCategoryService(transactionCategoryRepo)
 	currencyService := service.NewCurrencyService(currencyRepo)
 
 	// controller
 	registrationController := controller.NewRegistrationController(userService)
 	sessionController := controller.NewSessionController(sessionService, tokenCreator)
-	categoryController := controller.NewCategoryController(categoryService)
+	transactionCategoryController := controller.NewTransactionCategoryController(transactionCategoryService)
 	currencyController := controller.NewCurrencyController(currencyService)
 
 	// router
@@ -71,16 +71,19 @@ func main() {
 		r.Get("/", sessionController.Logout)
 	})
 
-	r.Route("/category", func(r chi.Router) {
+	r.Route("/transactions", func(r chi.Router) {
 		r.Use(middleware.AuthMiddleware(tokenCreator))
-		r.Post("/", categoryController.CreateCategory)
-		r.Get("/", categoryController.BrowseCategory)
-		r.Patch("/{id}", categoryController.UpdateCategory)
-		r.Get("/{id}", categoryController.DetailCategory)
-		r.Delete("/{id}", categoryController.DeleteCategory)
+
+		r.Route("/categories", func(r chi.Router) {
+			r.Post("/", transactionCategoryController.CreateCategory)
+			r.Get("/", transactionCategoryController.BrowseCategory)
+			r.Patch("/{id}", transactionCategoryController.UpdateCategory)
+			r.Get("/{id}", transactionCategoryController.DetailCategory)
+			r.Delete("/{id}", transactionCategoryController.DeleteCategory)
+		})
 	})
 
-	r.Route("/currency", func(r chi.Router) {
+	r.Route("/currencies", func(r chi.Router) {
 		r.Use(middleware.AuthMiddleware(tokenCreator))
 		r.Post("/", currencyController.CreateCurrency)
 		r.Get("/", currencyController.BrowseCurrency)
