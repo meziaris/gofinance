@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   postgres:
-    container_name: postgres
+    container_name: gofinance_postgres
     image: postgres:15.2
     environment:
       - POSTGRES_USER=postgres
@@ -16,16 +16,32 @@ services:
     volumes:
        - postgres:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - 5432:5432
     networks:
-      - database_network
+      - gofinance_network
     restart: always
+
+  app:
+    container_name: gofinance_app
+    build:
+      context: ./
+    image: meziaris/gofinance
+    ports:
+      - 3333:3333
+    volumes:
+       - ./app.env:/app/app.env
+    depends_on:
+      - postgres
+    networks:
+      - gofinance_network
+    restart: always
+
   migrate:
     image: migrate/migrate
     profiles:
       - tools
     networks:
-      - database_network
+      - gofinance_network
     volumes:
       - ./migrations:/migrations
     entrypoint:
@@ -45,5 +61,5 @@ volumes:
   postgres:
 
 networks:
-  database_network:
+  gofinance_network:
     driver: bridge
