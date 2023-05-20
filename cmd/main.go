@@ -40,6 +40,7 @@ func main() {
 	transactionCategoryRepo := repository.NewTransactionCategoryRepository(DBConn)
 	trxTypeRepo := repository.NewTransactionTypeRepository(DBConn)
 	currencyRepo := repository.NewCurrencyRepository(DBConn)
+	trxRepo := repository.NewTransactionRepository(DBConn)
 
 	// service
 	tokenCreator := service.NewTokenCreator(
@@ -53,6 +54,7 @@ func main() {
 	transactionCategoryService := service.NewTransactionCategoryService(transactionCategoryRepo)
 	trxTypeService := service.NewTransactionTypeService(trxTypeRepo)
 	currencyService := service.NewCurrencyService(currencyRepo)
+	trxService := service.NewTransactionService(trxRepo)
 
 	// controller
 	registrationController := controller.NewRegistrationController(userService)
@@ -60,6 +62,7 @@ func main() {
 	transactionCategoryController := controller.NewTransactionCategoryController(transactionCategoryService)
 	trxTypeController := controller.NewTransactionTypeController(trxTypeService)
 	currencyController := controller.NewCurrencyController(currencyService)
+	trxController := controller.NewTransactionController(trxService)
 
 	// router
 	r := chi.NewRouter()
@@ -76,6 +79,12 @@ func main() {
 
 	r.Route("/transactions", func(r chi.Router) {
 		r.Use(middleware.AuthMiddleware(tokenCreator))
+
+		r.Post("/", trxController.Create)
+		r.Get("/", trxController.BrowseAll)
+		r.Patch("/{id}", trxController.Update)
+		r.Get("/{id}", trxController.Detail)
+		r.Delete("/{id}", trxController.Delete)
 
 		r.Route("/categories", func(r chi.Router) {
 			r.Post("/", transactionCategoryController.CreateCategory)
