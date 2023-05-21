@@ -68,13 +68,16 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
 
-	r.Post("/auth/register", registrationController.Register)
-	r.Post("/auth/login", sessionController.Login)
-	r.Post("/auth/refresh", sessionController.Refresh)
+	r.Route("/auth", func(r chi.Router) {
+		r.Post("/register", registrationController.Register)
+		r.Post("/login", sessionController.Login)
+		r.Post("/refresh", sessionController.Refresh)
 
-	r.Route("/auth/logout", func(r chi.Router) {
-		r.Use(middleware.AuthMiddleware(tokenCreator))
-		r.Get("/", sessionController.Logout)
+		r.Route("/", func(r chi.Router) {
+			r.Use(middleware.AuthMiddleware(tokenCreator))
+			r.Get("/logout", sessionController.Logout)
+			r.Get("/profile", sessionController.Profile)
+		})
 	})
 
 	r.Route("/transactions", func(r chi.Router) {

@@ -127,6 +127,22 @@ func (s SessionService) Refresh(req schema.RefreshTokenReq) (schema.RefreshToken
 	return res, nil
 }
 
+func (s SessionService) Profile(userID int) (schema.UserProfileResp, error) {
+	resp := schema.UserProfileResp{}
+
+	user, err := s.userRepo.GetByID(userID)
+	if user.ID <= 0 {
+		log.Error("error SessionService - Profile : %w", err)
+		return resp, errors.New(reason.UserNotFound)
+	}
+
+	resp.Username = user.Username
+	resp.FullName = user.FullName
+	resp.UserSince = user.CreatedAt.Format("2006-01-02")
+
+	return resp, nil
+}
+
 func (s SessionService) verifyPassword(hashPwd string, plainPwd string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashPwd), []byte(plainPwd))
 	return err == nil

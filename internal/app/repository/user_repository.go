@@ -54,7 +54,7 @@ func (r UserRepository) GetByID(userID int) (model.User, error) {
 	var (
 		user         = model.User{}
 		sqlStatement = `
-			SELECT id, username, full_name
+			SELECT id, username, full_name, created_at
 			FROM users
 			WHERE id = $1
 			LIMIT 1

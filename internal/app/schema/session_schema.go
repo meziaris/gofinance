@@ -18,3 +18,9 @@ type RefreshTokenReq struct {
 type RefreshTokenResp struct {
 	AccessToken string `json:"access_token"`
 }
+
+type UserProfileResp struct {
+	Username  string `json:"username"`
+	FullName  string `json:"full_name"`
+	UserSince string `json:"user_since"`
+}
