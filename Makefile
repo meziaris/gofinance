@@ -32,7 +32,7 @@ lint:
 
 environment: ## Setup environment.
 environment:
-	docker compose -f ${DOCKER_COMPOSE_FILE} up -d
+	docker compose -f ${DOCKER_COMPOSE_FILE} up -d --no-deps --build
 
 server: ## Running application
 server:
