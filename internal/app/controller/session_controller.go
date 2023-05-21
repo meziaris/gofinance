@@ -13,6 +13,7 @@ type SessionService interface {
 	Login(req schema.LoginReq) (schema.LoginResp, error)
 	Logout(userID int) error
 	Refresh(req schema.RefreshTokenReq) (schema.RefreshTokenResp, error)
+	Profile(userID int) (schema.UserProfileResp, error)
 }
 
 type RefreshTokenVerifier interface {
@@ -82,4 +83,23 @@ func (c *SessionController) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	handler.ResponseSuccess(w, http.StatusOK, "success logout", nil)
+}
+
+func (c *SessionController) Profile(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value("user_id").(string)
+	id, _ := strconv.Atoi(userID)
+
+	user, err := c.sessionService.Profile(id)
+	if err != nil {
+		handler.ResponseError(w, http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	resp := schema.UserProfileResp{
+		Username:  user.Username,
+		FullName:  user.FullName,
+		UserSince: user.UserSince,
+	}
+
+	handler.ResponseSuccess(w, http.StatusOK, "success get user profile", resp)
 }
