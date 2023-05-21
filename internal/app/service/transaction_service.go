@@ -12,6 +12,7 @@ type TransactionRepository interface {
 	Create(trx model.Transaction) error
 	GetByID(id string) (model.Transaction, error)
 	Browse(search model.BrowseTransaction) ([]model.Transaction, error)
+	BrowseByType(search model.BrowseTransaction) ([]model.Transaction, error)
 	UpdateByID(transaction model.Transaction) error
 	DeleteByID(id string) error
 }
@@ -49,6 +50,32 @@ func (s TransactionService) BrowseAll(userID int, req schema.BrowseTransactionRe
 
 	dbSearch := model.BrowseTransaction{UserID: userID, Page: req.Page, Limit: req.Limit}
 	trxTypes, err := s.trxRepo.Browse(dbSearch)
+	if err != nil {
+		return nil, errors.New("cannot get transaction types")
+	}
+
+	for _, value := range trxTypes {
+		respData := schema.GetTransactionResp{
+			ID:                    value.ID,
+			UserID:                value.UserID,
+			TransactionCategoryID: value.TransactionCategoryID,
+			TransactionTypeID:     value.TransactionTypeID,
+			CurrencyID:            value.CurrencyID,
+			TransactionDate:       value.TransactionDate.Format("2006-01-02"),
+			Notes:                 value.Notes,
+			Amount:                value.Amount,
+		}
+		resp = append(resp, respData)
+	}
+
+	return resp, nil
+}
+
+func (s TransactionService) BrowseByType(userID int, typeID int, req schema.BrowseTransactionReq) ([]schema.GetTransactionResp, error) {
+	var resp []schema.GetTransactionResp
+
+	dbSearch := model.BrowseTransaction{UserID: userID, TypeID: typeID, Page: req.Page, Limit: req.Limit}
+	trxTypes, err := s.trxRepo.BrowseByType(dbSearch)
 	if err != nil {
 		return nil, errors.New("cannot get transaction types")
 	}

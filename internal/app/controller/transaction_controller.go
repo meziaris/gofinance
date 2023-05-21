@@ -12,6 +12,7 @@ import (
 type TransactionService interface {
 	Create(req schema.TransactionReq) error
 	BrowseAll(userID int, req schema.BrowseTransactionReq) ([]schema.GetTransactionResp, error)
+	BrowseByType(userID int, typeID int, req schema.BrowseTransactionReq) ([]schema.GetTransactionResp, error)
 	UpdateByID(id string, req schema.TransactionReq) error
 	GetByID(id string) (schema.GetTransactionResp, error)
 	DeleteByID(id string) error
@@ -61,6 +62,28 @@ func (c Transactionontroller) BrowseAll(w http.ResponseWriter, r *http.Request) 
 	}
 
 	handler.ResponseSuccess(w, http.StatusOK, "success get transaction types", resp)
+}
+
+func (c Transactionontroller) BrowseByType(w http.ResponseWriter, r *http.Request) {
+	typeID, _ := strconv.Atoi(chi.URLParam(r, "type_id"))
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+
+	userID := r.Context().Value("user_id").(string)
+	id, _ := strconv.Atoi(userID)
+
+	req := schema.BrowseTransactionReq{
+		Page:  page,
+		Limit: limit,
+	}
+
+	resp, err := c.service.BrowseByType(id, typeID, req)
+	if err != nil {
+		handler.ResponseError(w, http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	handler.ResponseSuccess(w, http.StatusOK, "success get transactions", resp)
 }
 
 func (c Transactionontroller) Update(w http.ResponseWriter, r *http.Request) {

@@ -89,6 +89,8 @@ func main() {
 		r.Get("/{id}", trxController.Detail)
 		r.Delete("/{id}", trxController.Delete)
 
+		r.Get("/recaps/{type_id}", trxController.BrowseByType)
+
 		r.Route("/categories", func(r chi.Router) {
 			r.Post("/", transactionCategoryController.CreateCategory)
 			r.Get("/", transactionCategoryController.BrowseCategory)
