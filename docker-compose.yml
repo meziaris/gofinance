@@ -31,7 +31,8 @@ services:
     volumes:
        - ./app.env:/app/app.env
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - gofinance_network
     restart: always
