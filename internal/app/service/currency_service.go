@@ -28,7 +28,7 @@ func (s CurrencyService) Create(req schema.CurrencyReq) error {
 
 	err := s.currencyRepo.Create(insertData)
 	if err != nil {
-		return err
+		return errors.New("failed to create currency")
 	}
 
 	return nil
@@ -52,17 +52,6 @@ func (s CurrencyService) BrowseAll(req schema.BrowseCurrencyReq) ([]schema.GetCu
 
 	return resp, nil
 }
-
-// func (s CurrencyService) Update(req schema.CurrencyReq) error {
-// 	insertData := model.Currency{Name: req.Name}
-
-// 	err := s.currencyRepo.Create(insertData)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
 
 func (s CurrencyService) UpdateByID(id string, req schema.CurrencyReq) error {
 	oldData, err := s.currencyRepo.GetByID(id)
