@@ -43,7 +43,7 @@ func (s TransactionCategoryService) BrowseAll(req schema.BrowseTransactionCatego
 	dbSearch := model.BrowseTransactionCategory{Page: req.Page, Limit: req.Limit}
 	categories, err := s.categoryRepo.Browse(dbSearch)
 	if err != nil {
-		return nil, errors.New("cannot get categories")
+		return nil, errors.New("cannot get transaction categories")
 	}
 
 	for _, value := range categories {
@@ -74,7 +74,7 @@ func (s TransactionCategoryService) Update(req schema.TransactionCategoryReq) er
 func (s TransactionCategoryService) UpdateByID(id string, req schema.TransactionCategoryReq) error {
 	oldData, err := s.categoryRepo.GetByID(id)
 	if err != nil {
-		return errors.New("category not exist")
+		return errors.New("transaction category not exist")
 	}
 
 	updateDate := model.TransactionCategory{
@@ -84,7 +84,7 @@ func (s TransactionCategoryService) UpdateByID(id string, req schema.Transaction
 	}
 
 	if err := s.categoryRepo.UpdateByID(updateDate); err != nil {
-		return errors.New("cannot update category")
+		return errors.New("cannot update transaction category")
 	}
 
 	return nil
@@ -94,7 +94,7 @@ func (s TransactionCategoryService) GetByID(id string) (schema.GetTransactionCat
 	resp := schema.GetTransactionCategoryResp{}
 	cat, err := s.categoryRepo.GetByID(id)
 	if err != nil {
-		return resp, errors.New("category not exist")
+		return resp, errors.New("transaction category not exist")
 	}
 
 	resp.ID = cat.ID
@@ -107,11 +107,11 @@ func (s TransactionCategoryService) GetByID(id string) (schema.GetTransactionCat
 func (s TransactionCategoryService) DeleteByID(id string) error {
 	_, err := s.categoryRepo.GetByID(id)
 	if err != nil {
-		return errors.New("category not exist")
+		return errors.New("transaction category not exist")
 	}
 
 	if err := s.categoryRepo.DeleteByID(id); err != nil {
-		return errors.New("cannot delete category")
+		return errors.New("cannot delete transaction category")
 	}
 
 	return nil

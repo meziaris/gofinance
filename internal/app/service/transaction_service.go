@@ -51,7 +51,7 @@ func (s TransactionService) BrowseAll(userID int, req schema.BrowseTransactionRe
 	dbSearch := model.BrowseTransaction{UserID: userID, Page: req.Page, Limit: req.Limit}
 	trxTypes, err := s.trxRepo.Browse(dbSearch)
 	if err != nil {
-		return nil, errors.New("cannot get transaction types")
+		return nil, errors.New("cannot get transactions")
 	}
 
 	for _, value := range trxTypes {
@@ -77,7 +77,7 @@ func (s TransactionService) BrowseByType(userID int, typeID int, req schema.Brow
 	dbSearch := model.BrowseTransaction{UserID: userID, TypeID: typeID, Page: req.Page, Limit: req.Limit}
 	trxTypes, err := s.trxRepo.BrowseByType(dbSearch)
 	if err != nil {
-		return nil, errors.New("cannot get transaction types")
+		return nil, errors.New("cannot get transactions")
 	}
 
 	for _, value := range trxTypes {
@@ -101,7 +101,7 @@ func (s TransactionService) UpdateByID(id string, req schema.TransactionReq) err
 	trxDate, _ := time.Parse("2006-01-02", req.TransactionDate)
 	oldData, err := s.trxRepo.GetByID(id)
 	if err != nil {
-		return errors.New("transaction type not exist")
+		return errors.New("transaction not exist")
 	}
 
 	updateData := model.Transaction{
@@ -116,7 +116,7 @@ func (s TransactionService) UpdateByID(id string, req schema.TransactionReq) err
 	}
 
 	if err := s.trxRepo.UpdateByID(updateData); err != nil {
-		return errors.New("cannot update transaction type")
+		return errors.New("cannot update transaction")
 	}
 
 	return nil
@@ -126,7 +126,7 @@ func (s TransactionService) GetByID(id string) (schema.GetTransactionResp, error
 	resp := schema.GetTransactionResp{}
 	cat, err := s.trxRepo.GetByID(id)
 	if err != nil {
-		return resp, errors.New("transaction type not exist")
+		return resp, errors.New("transaction not exist")
 	}
 
 	resp.ID = cat.ID
@@ -148,7 +148,7 @@ func (s TransactionService) DeleteByID(id string) error {
 	}
 
 	if err := s.trxRepo.DeleteByID(id); err != nil {
-		return errors.New("cannot delete transaction type")
+		return errors.New("cannot delete transaction")
 	}
 
 	return nil
