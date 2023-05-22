@@ -57,20 +57,6 @@ func (s TransactionCategoryService) BrowseAll(req schema.BrowseTransactionCatego
 	return resp, nil
 }
 
-func (s TransactionCategoryService) Update(req schema.TransactionCategoryReq) error {
-	insertData := model.TransactionCategory{
-		Name:        req.Name,
-		Description: req.Description,
-	}
-
-	err := s.categoryRepo.Create(insertData)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (s TransactionCategoryService) UpdateByID(id string, req schema.TransactionCategoryReq) error {
 	oldData, err := s.categoryRepo.GetByID(id)
 	if err != nil {
