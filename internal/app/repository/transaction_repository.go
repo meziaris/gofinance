@@ -116,6 +116,52 @@ func (r TransactionRepository) Browse(search model.BrowseTransaction) ([]model.T
 	return transactions, nil
 }
 
+func (r TransactionRepository) BrowseByType(search model.BrowseTransaction) ([]model.Transaction, error) {
+	var (
+		limit        = search.Limit
+		offset       = limit * (search.Page - 1)
+		transactions []model.Transaction
+		sqlStatement = `
+			SELECT
+				trx.id,
+				trx.user_id,
+				trx.transaction_category_id,
+				trx.transaction_type_id,
+				trx.currency_id,
+				trx.transaction_date,
+				trx.notes,
+				trx.amount
+			FROM transactions trx
+			LEFT JOIN transaction_types as trxtypes
+				ON trx.transaction_type_id = trxtypes.id
+			LEFT JOIN transaction_categories as trxcat
+				ON trx.transaction_category_id = trxcat.id
+			LEFT JOIN currencies
+				ON trx.currency_id = currencies.id
+			WHERE trx.user_id = $1 AND trx.transaction_type_id = $2
+			LIMIT $3
+			OFFSET $4
+		`
+	)
+
+	rows, err := r.DB.Queryx(sqlStatement, search.UserID, search.TypeID, limit, offset)
+	if err != nil {
+		log.Error(fmt.Errorf("error TransactionRepository - BrowseByType : %w", err))
+		return transactions, err
+	}
+
+	for rows.Next() {
+		var transaction model.Transaction
+		err := rows.StructScan(&transaction)
+		if err != nil {
+			log.Error(fmt.Errorf("error TransactionRepository - BrowseByType : %w", err))
+		}
+		transactions = append(transactions, transaction)
+	}
+
+	return transactions, nil
+}
+
 func (r TransactionRepository) UpdateByID(transaction model.Transaction) error {
 	var (
 		sqlStatement = `

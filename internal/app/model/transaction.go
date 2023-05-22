@@ -15,6 +15,7 @@ type Transaction struct {
 
 type BrowseTransaction struct {
 	UserID int
+	TypeID int
 	Page   int
 	Limit  int
 }
