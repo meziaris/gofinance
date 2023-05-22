@@ -28,7 +28,7 @@ func (s CurrencyService) Create(req schema.CurrencyReq) error {
 
 	err := s.currencyRepo.Create(insertData)
 	if err != nil {
-		return err
+		return errors.New("failed to create currency")
 	}
 
 	return nil

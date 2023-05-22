@@ -39,7 +39,7 @@ func (s TransactionService) Create(req schema.TransactionReq) error {
 
 	err := s.trxRepo.Create(insertData)
 	if err != nil {
-		return err
+		return errors.New("failed to create transaction")
 	}
 
 	return nil

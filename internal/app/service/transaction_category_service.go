@@ -31,7 +31,7 @@ func (s TransactionCategoryService) Create(req schema.TransactionCategoryReq) er
 
 	err := s.categoryRepo.Create(insertData)
 	if err != nil {
-		return err
+		return errors.New("failed to create transaction category")
 	}
 
 	return nil
